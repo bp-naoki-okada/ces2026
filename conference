@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CES視察スケジュール｜カード表示</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.10);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.65);
+      --border: rgba(255,255,255,0.12);
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius: 16px;
+      --radius2: 22px;
+      --gap: 14px;
+      --max: 1100px;
+      --badge-high: rgba(255, 99, 71, 0.18);
+      --badge-mid: rgba(255, 193, 7, 0.18);
+      --badge-low: rgba(0, 200, 120, 0.16);
+      --badge-text: rgba(255,255,255,0.90);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", "Meiryo", sans-serif;
+      background: radial-gradient(1200px 700px at 15% 10%, rgba(99, 102, 241, 0.25), transparent 60%),
+                  radial-gradient(900px 550px at 80% 30%, rgba(16, 185, 129, 0.18), transparent 55%),
+                  radial-gradient(800px 500px at 50% 90%, rgba(244, 63, 94, 0.16), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(to bottom, rgba(11,15,25,0.92), rgba(11,15,25,0.62));
+      border-bottom: 1px solid var(--border);
+    }
+    .wrap {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 18px 18px 14px;
+    }
+    .title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.2px;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .controls {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1.4fr 0.7fr 0.7fr;
+      gap: 10px;
+    }
+    @media (max-width: 780px) {
+      .controls { grid-template-columns: 1fr; }
+    }
+    .input, .select {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      outline: none;
+    }
+    .input::placeholder { color: rgba(255,255,255,0.5); }
+    option { background: #0b0f19; }
+    main {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 18px 18px 36px;
+    }
+    .day {
+      margin-top: 18px;
+      border-radius: var(--radius2);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      box-shadow: var(--shadow);
+    }
+    .day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: linear-gradient(to right, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border-bottom: 1px solid var(--border);
+    }
+    .day-title {
+      font-size: 15px;
+      margin: 0;
+      letter-spacing: 0.2px;
+    }
+    .count {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .grid {
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--gap);
+    }
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .card {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      padding: 14px 14px 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      background: rgba(255,255,255,0.09);
+    }
+    .top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .time {
+      font-weight: 650;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+    }
+    .badge {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--badge-text);
+      white-space: nowrap;
+    }
+    .badge.high { background: var(--badge-high); }
+    .badge.mid { background: var(--badge-mid); }
+    .badge.low { background: var(--badge-low); }
+
+    .h2 {
+      margin: 10px 0 8px;
+      font-size: 15px;
+      line-height: 1.35;
+      letter-spacing: 0.2px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 8px 12px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(255,255,255,0.14);
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .k { color: rgba(255,255,255,0.72); }
+    .v { color: rgba(255,255,255,0.88); }
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    a.btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      padding: 9px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+    }
+    a.btn:hover {
+      background: rgba(255,255,255,0.10);
+    }
+    .pill {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: rgba(255,255,255,0.80);
+      background: rgba(255,255,255,0.04);
+    }
+    .empty {
+      padding: 18px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .footer {
+      margin-top: 20px;
+      color: rgba(255,255,255,0.45);
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title-row">
+        <h1>CES視察スケジュール（Excel → カード表示）</h1>
+        <div class="meta" id="meta"></div>
+      </div>
+
+      <div class="controls">
+        <input id="q" class="input" placeholder="検索（セッション名 / 場所 / キャンパス / 有料パス など）" />
+        <select id="campus" class="select">
+          <option value="">キャンパス：すべて</option>
+        </select>
+        <select id="prio" class="select">
+          <option value="">優先度：すべて</option>
+          <option value="高">高</option>
+          <option value="中">中</option>
+          <option value="低">低</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main id="app"></main>
+
+  <script>
+    const DATA = [{"No": 1, "date_label": "2025-01-06（月）", "時間": "09:00 - 09:40", "キャンパス": "LVCC", "場所": "West Level 2, W232", "有料パス": "-", "セッション名": "Tech Trends 2026: The Future is Calling, presented by Deloitte", "URL": "https://www.ces.tech/schedule/tech-trends-2026-the-future-is-calling-presented-by-deloitte/", "優先度": "高"}, {"No": 2, "date_label": "2025-01-06（月）", "時間": "09:00 - 09:40", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 8", "有料パス": "-", "セッション名": "The End of the Funnel", "URL": "https://www.ces.tech/schedule/the-end-of-the-funnel/", "優先度": "中"}, {"No": 3, "date_label": "2025-01-06（月）", "時間": "09:00 - 09:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4304", "有料パス": "CONNECTIONS Summit: Business of Smart Home", "セッション名": "Beyond the Buzz: Al Impact and Revenues in the Smart Home", "URL": "https://www.ces.tech/schedule/beyond-the-buzz-ai-impact-and-revenues-in-the-smart-home/", "優先度": "低"}, {"No": 4, "date_label": "2025-01-06（月）", "時間": "10:00 - 10:40", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 8", "有料パス": "-", "セッション名": "Agentic Al: Cutting Through the Hype", "URL": "https://www.ces.tech/schedule/agentic-ai-cutting-through-the-hype/", "優先度": "高"}, {"No": 5, "date_label": "2025-01-06（月）", "時間": "11:00 - 11:40", "キャンパス": "LVCC", "場所": "West Level 2, W218", "有料パス": "-", "セッション名": "The Edge Awakens: Why Agentic Al Will Reshape Everything", "URL": "https://www.ces.tech/schedule/the-edge-awakens-why-agentic-ai-will-reshape-everything/", "優先度": "高"}, {"No": 6, "date_label": "2025-01-06（月）", "時間": "13:00 - 13:40", "キャンパス": "LVCC", "場所": "North Level 2, N257", "有料パス": "Modev: AI House", "セッション名": "Leading Through Transformation: How Al Is Redefining the Enterprise of the Future", "URL": "https://www.ces.tech/schedule/leading-through-transformation-how-ai-is-redefining-the-enterprise-of-the-future/", "優先度": "高"}, {"No": 7, "date_label": "2025-01-06（月）", "時間": "13:00 - 13:40", "キャンパス": "LVCC", "場所": "North Level 2, N261", "有料パス": "Smart Communities Track", "セッション名": "Connected Communities: How Al Powers the Next Era of Innovation", "URL": "https://www.ces.tech/schedule/connected-communities-how-ai-powers-the-next-era-of-innovation/", "優先度": "低"}, {"No": 8, "date_label": "2025-01-06（月）", "時間": "14:00 - 14:40", "キャンパス": "LVCC", "場所": "North Level 2, N257", "有料パス": "Modev: AI House", "セッション名": "Al and the Workforce: Adaptation, Automation, and Abundance", "URL": "https://www.ces.tech/schedule/ai-and-the-workforce-adaptation-automation-and-abundance/", "優先度": "高"}, {"No": 9, "date_label": "2025-01-06（月）", "時間": "14:00 - 14:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "New Era of Access: Enhancing Assistive Tech with Al", "URL": "https://www.ces.tech/schedule/new-era-of-access-enhancing-assistive-tech-with-ai/", "優先度": "高"}, {"No": 10, "date_label": "2025-01-06（月）", "時間": "15:00 - 15:30", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 9", "有料パス": "-", "セッション名": "Al at Work: Turning Hype into Hard ROI", "URL": "https://www.ces.tech/schedule/ai-at-work-turning-hype-into-hard-roi/", "優先度": "低"}, {"No": 11, "date_label": "2025-01-06（月）", "時間": "15:30 - 16:00", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 9", "有料パス": "-", "セッション名": "The Algorithm of Awe: Building Fandom in the New Tech Age", "URL": "https://www.ces.tech/schedule/the-algorithm-of-awe-building-fandom-in-the-new-tech-age/", "優先度": "中"}, {"No": 12, "date_label": "2025-01-07（火）", "時間": "09:00 - 09:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4304", "有料パス": "-", "セッション名": "Unlocking the Power of AI to Transform Mental Health Care", "URL": "https://www.ces.tech/schedule/unlocking-the-power-of-ai-to-transform-mental-health-care/", "優先度": "低"}, {"No": 13, "date_label": "2025-01-07（火）", "時間": "10:00 - 10:40", "キャンパス": "LVCC", "場所": "West Level 2, W218", "有料パス": "Home Entertainment and Streaming", "セッション名": "Personalizing Entertainment with AI", "URL": "https://www.ces.tech/schedule/personalizing-entertainment-with-ai/", "優先度": "中"}, {"No": 14, "date_label": "2025-01-07（火）", "時間": "11:00 - 11:40", "キャンパス": "LVCC", "場所": "West Level 2, W218", "有料パス": "-", "セッション名": "The Latest in Smart Devices and Smart Home Integration", "URL": "https://www.ces.tech/schedule/the-latest-in-smart-devices-and-smart-home-integration/", "優先度": "低"}, {"No": 15, "date_label": "2025-01-07（火）", "時間": "12:30 - 13:00", "キャンパス": "LVCC", "場所": "Fontainebleau, Level 4, Azure Ballroom, Discovery Stage", "有料パス": "-", "セッション名": "The Al Reckoning: Blueprints for Tomorrow's Winners, presented by EY", "URL": "https://www.ces.tech/schedule/the-ai-reckoning-blueprints-for-tomorrow-s-winners-presented-by-ey/", "優先度": "中"}, {"No": 16, "date_label": "2025-01-07（火）", "時間": "13:00 - 13:40", "キャンパス": "Venetian", "場所": "Level 3, Lido 3105", "有料パス": "-", "セッション名": "Consumer experience transformation in the age of agentic Al", "URL": "https://app-cta-umbraco-eastus-prod-gnbahsamfmamgfha.eastus-01.azurewebsites.net/schedule/consumer-experience-transformation-in-the-age-of-agentic-ai/", "優先度": "中"}, {"No": 17, "date_label": "2025-01-07（火）", "時間": "13:00 - 13:40", "キャンパス": "LVCC", "場所": "Grand Lobby, CTA Stage", "有料パス": "-", "セッション名": "Work Rewired: The Next Tech Revolution", "URL": "https://www.ces.tech/schedule/work-rewired-the-next-tech-revolution/", "優先度": "低"}, {"No": 18, "date_label": "2025-01-07（火）", "時間": "13:30-14:00", "キャンパス": "LVCC", "場所": "Mobility Stage, West Hall", "有料パス": "-", "セッション名": "Accelerating Product Development with Virtual Materials and Simulatio", "URL": "https://www.ces.tech/schedule/accelerating-product-development-with-virtual-materials-simulation-presented-by-3m/", "優先度": "高"}, {"No": 19, "date_label": "2025-01-07（火）", "時間": "14:00 - 14:40", "キャンパス": "Venetian", "場所": "Level 4, Marcello 4404", "有料パス": "Digital Health", "セッション名": "Agentic AI in Health Care: Beyond the Hype", "URL": "https://www.ces.tech/schedule/agentic-ai-in-health-care-beyond-the-hype/", "優先度": "低"}, {"No": 20, "date_label": "2025-01-07（火）", "時間": "14:20 - 15:20", "キャンパス": "LVCC", "場所": "Level 2, N258", "有料パス": "-", "セッション名": "The New Renaissance: Al and the Next Era of Innovation", "URL": "https://www.ces.tech/schedule/the-new-renaissance-ai-and-the-next-era-of-innovation/", "優先度": "高"}, {"No": 21, "date_label": "2025-01-07（火）", "時間": "15:00 - 15:30", "キャンパス": "LVCC", "場所": "Fontainebleau, Level 4, Capri 2", "有料パス": "-", "セッション名": "25 Minutes of Al, presented by Monks", "URL": "https://www.ces.tech/schedule/25-minutes-of-ai-presented-by-monks/", "優先度": "高"}, {"No": 22, "date_label": "2025-01-08（水）", "時間": "09:00 - 09:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "Al-Powered Wearables", "URL": "https://www.ces.tech/schedule/ai-powered-wearables/", "優先度": "中"}, {"No": 23, "date_label": "2025-01-08（水）", "時間": "10:00 - 10:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "Fashion Meets Function: The Next Generation of Smart Apparel", "URL": "https://www.ces.tech/schedule/fashion-meets-function-the-next-generation-of-smart-apparel/", "優先度": "低"}, {"No": 24, "date_label": "2025-01-08（水）", "時間": "11:00 - 11:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4304", "有料パス": "-", "セッション名": "Smarter Together: How Standards Power the Al-Driven Smart Home", "URL": "https://www.ces.tech/schedule/smarter-together-how-standards-power-the-ai-driven-smart-home/", "優先度": "低"}, {"No": 25, "date_label": "2025-01-08（水）", "時間": "11:00 - 11:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "Body-Based Tech", "URL": "https://www.ces.tech/schedule/body-based-tech/", "優先度": "低"}, {"No": 26, "date_label": "2025-01-08（水）", "時間": "12:00 - 12:30", "キャンパス": "LVCC", "場所": "Fontainebleau, Level 4, Azure Ballroom, Breakthrough Stage", "有料パス": "-", "セッション名": "Smarter Shopping: Al Agents Powering the Next Era of Retail Innovation, presented by Deloitte", "URL": "https://www.ces.tech/schedule/smarter-shopping-ai-agents-powering-the-next-era-of-retail-innovation-presented-by-deloitte/", "優先度": "低"}];
+
+    const byId = (id) => document.getElementById(id);
+
+    const state = {
+      q: "",
+      campus: "",
+      prio: ""
+    };
+
+    function uniq(arr) {
+      return Array.from(new Set(arr)).filter(Boolean);
+    }
+
+    function badgeClass(p) {
+      if (p === "高") return "high";
+      if (p === "中") return "mid";
+      if (p === "低") return "low";
+      return "";
+    }
+
+    function matches(item) {
+      const q = state.q.trim().toLowerCase();
+      if (state.campus && item["キャンパス"] !== state.campus) return false;
+      if (state.prio && item["優先度"] !== state.prio) return false;
+      if (!q) return true;
+
+      const hay = [
+        item["セッション名"], item["場所"], item["キャンパス"], item["有料パス"],
+        item["時間"], item["date_label"]
+      ].join(" ").toLowerCase();
+
+      return hay.includes(q);
+    }
+
+    function groupByDate(items) {
+      const map = new Map();
+      for (const it of items) {
+        const key = it["date_label"] || "日付不明";
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(it);
+      }
+      return Array.from(map.entries());
+    }
+
+    function card(it) {
+      const p = (it["優先度"] || "").trim();
+      const badge = p ? `<span class="badge ${badgeClass(p)}">優先度：${escapeHtml(p)}</span>` : `<span class="badge">優先度：-</span>`;
+      const paid = (it["有料パス"] || "").trim();
+      const paidPill = paid && paid !== "-" ? `<span class="pill">有料パス：${escapeHtml(paid)}</span>` : `<span class="pill">有料パス：なし</span>`;
+      const url = (it["URL"] || "").trim();
+
+      return `
+        <article class="card">
+          <div class="top">
+            <div class="time">${escapeHtml(it["時間"] || "")}</div>
+            ${badge}
+          </div>
+
+          <div class="h2">${escapeHtml(it["セッション名"] || "")}</div>
+
+          <div class="actions">
+            ${paidPill}
+            ${url ? `<a class="btn" href="${escapeAttr(url)}" target="_blank" rel="noopener">公式ページを開く ↗</a>` : ""}
+          </div>
+
+          <div class="row">
+            <div class="k">キャンパス</div><div class="v">${escapeHtml(it["キャンパス"] || "")}</div>
+            <div class="k">場所</div><div class="v">${escapeHtml(it["場所"] || "")}</div>
+            <div class="k">No</div><div class="v">${escapeHtml(String(it["No"] ?? ""))}</div>
+          </div>
+        </article>
+      `;
+    }
+
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+    function escapeAttr(s) {
+      return String(s ?? "").replaceAll('"', "%22").replaceAll(" ", "%20");
+    }
+
+    function render() {
+      const filtered = DATA.filter(matches);
+
+      byId("meta").textContent = `全${DATA.length}件 / 表示${filtered.length}件`;
+
+      const grouped = groupByDate(filtered);
+      const app = byId("app");
+
+      if (filtered.length === 0) {
+        app.innerHTML = `<div class="day"><div class="empty">条件に一致する予定がありません（検索語や絞り込みを変えてください）</div></div>`;
+        return;
+      }
+
+      app.innerHTML = grouped.map(([date, items]) => `
+        <section class="day">
+          <div class="day-header">
+            <h2 class="day-title">${escapeHtml(date)}</h2>
+            <div class="count">${items.length}件</div>
+          </div>
+          <div class="grid">
+            ${items.map(card).join("")}
+          </div>
+        </section>
+      `).join("");
+
+      const footer = document.createElement("div");
+      footer.className = "footer";
+      footer.textContent = "※ このHTMLはローカルで開けます（Excelの内容を埋め込み済み）";
+      app.appendChild(footer);
+    }
+
+    function initControls() {
+      const campuses = uniq(DATA.map(d => (d["キャンパス"] || "").trim()));
+      const sel = byId("campus");
+      for (const c of campuses) {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = `キャンパス：${c}`;
+        sel.appendChild(opt);
+      }
+
+      byId("q").addEventListener("input", (e) => {
+        state.q = e.target.value || "";
+        render();
+      });
+      byId("campus").addEventListener("change", (e) => {
+        state.campus = e.target.value || "";
+        render();
+      });
+      byId("prio").addEventListener("change", (e) => {
+        state.prio = e.target.value || "";
+        render();
+      });
+    }
+
+    initControls();
+    render();
+  </script>
+</body>
+</html>
