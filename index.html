@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CES視察スケジュール</title>
+  <title>CES 2026 AI系セッション</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -249,15 +249,14 @@
   <header>
     <div class="wrap">
       <div class="title-row">
-        <h1>CES視察スケジュール</h1>
+        <h1>CES 2026 AI系セッション</h1>
         <div class="meta" id="meta"></div>
         <button id="toggleControls" class="toggle" type="button" aria-expanded="true">検索・絞り込みを折り畳む</button>
       </div>
 
       <div id="controlsWrap" class="controls-wrap" aria-hidden="false">
         <div class="controls">
-        <input id="q" class="input" placeholder="検索（セッション名 / 場所 / キャンパス / 有料パス など）" />
-        <select id="campus" class="select">
+                <select id="campus" class="select">
           <option value="">キャンパス：すべて</option>
         </select>
         <select id="prio" class="select">
@@ -279,7 +278,6 @@
     const byId = (id) => document.getElementById(id);
 
     const state = {
-      q: "",
       campus: "",
       prio: ""
     };
@@ -296,17 +294,9 @@
     }
 
     function matches(item) {
-      const q = state.q.trim().toLowerCase();
       if (state.campus && item["キャンパス"] !== state.campus) return false;
       if (state.prio && item["優先度"] !== state.prio) return false;
-      if (!q) return true;
-
-      const hay = [
-        item["セッション名"], item["場所"], item["キャンパス"], item["有料パス"],
-        item["時間"], item["date_label"]
-      ].join(" ").toLowerCase();
-
-      return hay.includes(q);
+      return true;
     }
 
     function groupByDate(items) {
@@ -402,10 +392,6 @@
         sel.appendChild(opt);
       }
 
-      byId("q").addEventListener("input", (e) => {
-        state.q = e.target.value || "";
-        render();
-      });
       byId("campus").addEventListener("change", (e) => {
         state.campus = e.target.value || "";
         render();
