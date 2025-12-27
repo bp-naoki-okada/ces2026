@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CES視察スケジュール｜カード表示</title>
+  <title>CES視察スケジュール</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -214,6 +214,35 @@
       font-size: 12px;
       text-align: center;
     }
+
+    .toggle {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 14px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .toggle:hover {
+      background: rgba(255,255,255,0.10);
+    }
+    .controls-wrap {
+      overflow: hidden;
+      transition: max-height 220ms ease, opacity 220ms ease;
+      max-height: 300px; /* expanded */
+      opacity: 1;
+    }
+    .controls-wrap.collapsed {
+      max-height: 0;
+      opacity: 0;
+    }
+    @media (max-width: 780px) {
+      .toggle { width: 100%; }
+      .title-row { align-items: stretch; }
+    }
+
   </style>
 </head>
 <body>
@@ -222,9 +251,11 @@
       <div class="title-row">
         <h1>CES視察スケジュール（Excel → カード表示）</h1>
         <div class="meta" id="meta"></div>
+        <button id="toggleControls" class="toggle" type="button" aria-expanded="true">検索・絞り込みを折り畳む</button>
       </div>
 
-      <div class="controls">
+      <div id="controlsWrap" class="controls-wrap" aria-hidden="false">
+        <div class="controls">
         <input id="q" class="input" placeholder="検索（セッション名 / 場所 / キャンパス / 有料パス など）" />
         <select id="campus" class="select">
           <option value="">キャンパス：すべて</option>
@@ -235,6 +266,7 @@
           <option value="中">中</option>
           <option value="低">低</option>
         </select>
+        </div>
       </div>
     </div>
   </header>
@@ -384,7 +416,37 @@
       });
     }
 
+
+    function setControlsCollapsed(collapsed) {
+      const wrap = byId("controlsWrap");
+      const btn = byId("toggleControls");
+      if (!wrap || !btn) return;
+      wrap.classList.toggle("collapsed", collapsed);
+      btn.setAttribute("aria-expanded", String(!collapsed));
+      wrap.setAttribute("aria-hidden", String(collapsed));
+      btn.textContent = collapsed ? "検索・絞り込みを表示" : "検索・絞り込みを折り畳む";
+      try { localStorage.setItem("ces_controls_collapsed", collapsed ? "1" : "0"); } catch (e) {}
+    }
+
+    function initToggle() {
+      const btn = byId("toggleControls");
+      const wrap = byId("controlsWrap");
+      if (!btn || !wrap) return;
+
+      // restore
+      let collapsed = false;
+      try { collapsed = localStorage.getItem("ces_controls_collapsed") === "1"; } catch (e) {}
+      setControlsCollapsed(collapsed);
+
+      btn.addEventListener("click", () => {
+        const isCollapsed = wrap.classList.contains("collapsed");
+        setControlsCollapsed(!isCollapsed);
+      });
+    }
+
+
     initControls();
+    initToggle();
     render();
   </script>
 </body>
