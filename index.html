@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ja">
 <head>
@@ -8,8 +7,6 @@
   <style>
     :root {
       --bg: #0b0f19;
-      --panel: rgba(255,255,255,0.06);
-      --panel2: rgba(255,255,255,0.10);
       --text: rgba(255,255,255,0.92);
       --muted: rgba(255,255,255,0.65);
       --border: rgba(255,255,255,0.12);
@@ -58,20 +55,33 @@
       font-size: 20px;
       letter-spacing: 0.2px;
     }
-    .meta {
-      color: var(--muted);
+    .meta { color: var(--muted); font-size: 12px; }
+    .toggle {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 9px 12px;
+      border-radius: 14px;
       font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
     }
+    .toggle:hover { background: rgba(255,255,255,0.10); }
+    .controls-wrap {
+      overflow: hidden;
+      transition: max-height 220ms ease, opacity 220ms ease;
+      max-height: 300px;
+      opacity: 1;
+    }
+    .controls-wrap.collapsed { max-height: 0; opacity: 0; }
+
     .controls {
       margin-top: 12px;
       display: grid;
-      grid-template-columns: 1.4fr 0.7fr 0.7fr;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
-    @media (max-width: 780px) {
-      .controls { grid-template-columns: 1fr; }
-    }
-    .input, .select {
+    .select {
       width: 100%;
       padding: 12px 12px;
       border-radius: 14px;
@@ -80,8 +90,13 @@
       color: var(--text);
       outline: none;
     }
-    .input::placeholder { color: rgba(255,255,255,0.5); }
     option { background: #0b0f19; }
+    @media (max-width: 780px) {
+      .controls { grid-template-columns: 1fr; }
+      .toggle { width: 100%; }
+      .title-row { align-items: stretch; }
+    }
+
     main {
       max-width: var(--max);
       margin: 0 auto;
@@ -109,19 +124,15 @@
       margin: 0;
       letter-spacing: 0.2px;
     }
-    .count {
-      color: var(--muted);
-      font-size: 12px;
-    }
+    .count { color: var(--muted); font-size: 12px; }
     .grid {
       padding: 14px;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: var(--gap);
     }
-    @media (max-width: 920px) {
-      .grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+
     .card {
       border-radius: var(--radius);
       border: 1px solid var(--border);
@@ -130,20 +141,16 @@
       position: relative;
       overflow: hidden;
     }
-    .card:hover {
-      background: rgba(255,255,255,0.09);
-    }
+    .card:hover { background: rgba(255,255,255,0.09); }
+
     .top {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 10px;
     }
-    .time {
-      font-weight: 650;
-      font-size: 13px;
-      letter-spacing: 0.2px;
-    }
+    .time { font-weight: 650; font-size: 13px; letter-spacing: 0.2px; }
+
     .badge {
       font-size: 12px;
       padding: 6px 10px;
@@ -153,15 +160,41 @@
       white-space: nowrap;
     }
     .badge.high { background: var(--badge-high); }
-    .badge.mid { background: var(--badge-mid); }
-    .badge.low { background: var(--badge-low); }
+    .badge.mid  { background: var(--badge-mid); }
+    .badge.low  { background: var(--badge-low); }
 
     .h2 {
-      margin: 10px 0 8px;
+      margin: 10px 0 6px;
       font-size: 15px;
       line-height: 1.35;
       letter-spacing: 0.2px;
     }
+    .title-link { color: var(--text); text-decoration: none; }
+    .title-link:hover { text-decoration: underline; opacity: 0.9; }
+
+    .overview {
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
+      line-height: 1.45;
+      margin: 0 0 8px;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;  /* 3行まで表示 */
+      overflow: hidden;
+    }
+
+    .actions { margin-top: 6px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      line-height: 1.2;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: rgba(255,255,255,0.80);
+      background: rgba(255,255,255,0.04);
+      margin-top: -2px;
+    }
+
     .row {
       display: grid;
       grid-template-columns: 90px 1fr;
@@ -174,97 +207,9 @@
     }
     .k { color: rgba(255,255,255,0.72); }
     .v { color: rgba(255,255,255,0.88); }
-    .actions {
-      margin-top: 12px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    a.btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-      color: var(--text);
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.06);
-      padding: 9px 12px;
-      border-radius: 14px;
-      font-size: 12px;
-    }
-    a.btn:hover {
-      background: rgba(255,255,255,0.10);
-    }
-    .pill {
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: rgba(255,255,255,0.80);
-      background: rgba(255,255,255,0.04);
-    }
-    .empty {
-      padding: 18px;
-      color: var(--muted);
-      text-align: center;
-    }
-    .footer {
-      margin-top: 20px;
-      color: rgba(255,255,255,0.45);
-      font-size: 12px;
-      text-align: center;
-    }
 
-    .toggle {
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      padding: 9px 12px;
-      border-radius: 14px;
-      font-size: 12px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .toggle:hover {
-      background: rgba(255,255,255,0.10);
-    }
-    .controls-wrap {
-      overflow: hidden;
-      transition: max-height 220ms ease, opacity 220ms ease;
-      max-height: 300px; /* expanded */
-      opacity: 1;
-    }
-    .controls-wrap.collapsed {
-      max-height: 0;
-      opacity: 0;
-    }
-    @media (max-width: 780px) {
-      .toggle { width: 100%; }
-      .title-row { align-items: stretch; }
-    }
-
-
-    .title-link {
-      color: var(--text);
-      text-decoration: none;
-    }
-    .title-link:hover {
-      text-decoration: underline;
-      opacity: 0.9;
-    }
-
-
-    .pill {
-      font-size: 11px;
-      padding: 3px 8px;
-      line-height: 1.2;
-      margin-top: -2px;
-    }
-    .actions {
-      margin-top: 6px;
-    }
-
+    .empty { padding: 18px; color: var(--muted); text-align: center; }
+    .footer { margin-top: 20px; color: rgba(255,255,255,0.45); font-size: 12px; text-align: center; }
   </style>
 </head>
 <body>
@@ -278,15 +223,15 @@
 
       <div id="controlsWrap" class="controls-wrap collapsed" aria-hidden="true">
         <div class="controls">
-                <select id="campus" class="select">
-          <option value="">キャンパス：すべて</option>
-        </select>
-        <select id="prio" class="select">
-          <option value="">優先度：すべて</option>
-          <option value="高">高</option>
-          <option value="中">中</option>
-          <option value="低">低</option>
-        </select>
+          <select id="campus" class="select">
+            <option value="">キャンパス：すべて</option>
+          </select>
+          <select id="prio" class="select">
+            <option value="">優先度：すべて</option>
+            <option value="高">高</option>
+            <option value="中">中</option>
+            <option value="低">低</option>
+          </select>
         </div>
       </div>
     </div>
@@ -295,18 +240,13 @@
   <main id="app"></main>
 
   <script>
-    const DATA = [{"No": 1, "date_label": "2025-01-06（月）", "時間": "09:00 - 09:40", "キャンパス": "LVCC", "場所": "West Level 2, W232", "有料パス": "-", "セッション名": "Tech Trends 2026: The Future is Calling, presented by Deloitte", "URL": "https://www.ces.tech/schedule/tech-trends-2026-the-future-is-calling-presented-by-deloitte/", "優先度": "高"}, {"No": 2, "date_label": "2025-01-06（月）", "時間": "09:00 - 09:40", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 8", "有料パス": "-", "セッション名": "The End of the Funnel", "URL": "https://www.ces.tech/schedule/the-end-of-the-funnel/", "優先度": "中"}, {"No": 3, "date_label": "2025-01-06（月）", "時間": "09:00 - 09:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4304", "有料パス": "CONNECTIONS Summit: Business of Smart Home", "セッション名": "Beyond the Buzz: Al Impact and Revenues in the Smart Home", "URL": "https://www.ces.tech/schedule/beyond-the-buzz-ai-impact-and-revenues-in-the-smart-home/", "優先度": "低"}, {"No": 4, "date_label": "2025-01-06（月）", "時間": "10:00 - 10:40", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 8", "有料パス": "-", "セッション名": "Agentic Al: Cutting Through the Hype", "URL": "https://www.ces.tech/schedule/agentic-ai-cutting-through-the-hype/", "優先度": "高"}, {"No": 5, "date_label": "2025-01-06（月）", "時間": "11:00 - 11:40", "キャンパス": "LVCC", "場所": "West Level 2, W218", "有料パス": "-", "セッション名": "The Edge Awakens: Why Agentic Al Will Reshape Everything", "URL": "https://www.ces.tech/schedule/the-edge-awakens-why-agentic-ai-will-reshape-everything/", "優先度": "高"}, {"No": 6, "date_label": "2025-01-06（月）", "時間": "13:00 - 13:40", "キャンパス": "LVCC", "場所": "North Level 2, N257", "有料パス": "Modev: AI House", "セッション名": "Leading Through Transformation: How Al Is Redefining the Enterprise of the Future", "URL": "https://www.ces.tech/schedule/leading-through-transformation-how-ai-is-redefining-the-enterprise-of-the-future/", "優先度": "高"}, {"No": 7, "date_label": "2025-01-06（月）", "時間": "13:00 - 13:40", "キャンパス": "LVCC", "場所": "North Level 2, N261", "有料パス": "Smart Communities Track", "セッション名": "Connected Communities: How Al Powers the Next Era of Innovation", "URL": "https://www.ces.tech/schedule/connected-communities-how-ai-powers-the-next-era-of-innovation/", "優先度": "低"}, {"No": 8, "date_label": "2025-01-06（月）", "時間": "14:00 - 14:40", "キャンパス": "LVCC", "場所": "North Level 2, N257", "有料パス": "Modev: AI House", "セッション名": "Al and the Workforce: Adaptation, Automation, and Abundance", "URL": "https://www.ces.tech/schedule/ai-and-the-workforce-adaptation-automation-and-abundance/", "優先度": "高"}, {"No": 9, "date_label": "2025-01-06（月）", "時間": "14:00 - 14:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "New Era of Access: Enhancing Assistive Tech with Al", "URL": "https://www.ces.tech/schedule/new-era-of-access-enhancing-assistive-tech-with-ai/", "優先度": "高"}, {"No": 10, "date_label": "2025-01-06（月）", "時間": "15:00 - 15:30", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 9", "有料パス": "-", "セッション名": "Al at Work: Turning Hype into Hard ROI", "URL": "https://www.ces.tech/schedule/ai-at-work-turning-hype-into-hard-roi/", "優先度": "低"}, {"No": 11, "date_label": "2025-01-06（月）", "時間": "15:30 - 16:00", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 9", "有料パス": "-", "セッション名": "The Algorithm of Awe: Building Fandom in the New Tech Age", "URL": "https://www.ces.tech/schedule/the-algorithm-of-awe-building-fandom-in-the-new-tech-age/", "優先度": "中"}, {"No": 12, "date_label": "2025-01-07（火）", "時間": "09:00 - 09:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4304", "有料パス": "-", "セッション名": "Unlocking the Power of AI to Transform Mental Health Care", "URL": "https://www.ces.tech/schedule/unlocking-the-power-of-ai-to-transform-mental-health-care/", "優先度": "低"}, {"No": 13, "date_label": "2025-01-07（火）", "時間": "10:00 - 10:40", "キャンパス": "LVCC", "場所": "West Level 2, W218", "有料パス": "Home Entertainment and Streaming", "セッション名": "Personalizing Entertainment with AI", "URL": "https://www.ces.tech/schedule/personalizing-entertainment-with-ai/", "優先度": "中"}, {"No": 14, "date_label": "2025-01-07（火）", "時間": "11:00 - 11:40", "キャンパス": "LVCC", "場所": "West Level 2, W218", "有料パス": "-", "セッション名": "The Latest in Smart Devices and Smart Home Integration", "URL": "https://www.ces.tech/schedule/the-latest-in-smart-devices-and-smart-home-integration/", "優先度": "低"}, {"No": 15, "date_label": "2025-01-07（火）", "時間": "12:30 - 13:00", "キャンパス": "LVCC", "場所": "Fontainebleau, Level 4, Azure Ballroom, Discovery Stage", "有料パス": "-", "セッション名": "The Al Reckoning: Blueprints for Tomorrow's Winners, presented by EY", "URL": "https://www.ces.tech/schedule/the-ai-reckoning-blueprints-for-tomorrow-s-winners-presented-by-ey/", "優先度": "中"}, {"No": 16, "date_label": "2025-01-07（火）", "時間": "13:00 - 13:40", "キャンパス": "Venetian", "場所": "Level 3, Lido 3105", "有料パス": "-", "セッション名": "Consumer experience transformation in the age of agentic Al", "URL": "https://app-cta-umbraco-eastus-prod-gnbahsamfmamgfha.eastus-01.azurewebsites.net/schedule/consumer-experience-transformation-in-the-age-of-agentic-ai/", "優先度": "中"}, {"No": 17, "date_label": "2025-01-07（火）", "時間": "13:00 - 13:40", "キャンパス": "LVCC", "場所": "Grand Lobby, CTA Stage", "有料パス": "-", "セッション名": "Work Rewired: The Next Tech Revolution", "URL": "https://www.ces.tech/schedule/work-rewired-the-next-tech-revolution/", "優先度": "低"}, {"No": 18, "date_label": "2025-01-07（火）", "時間": "13:30-14:00", "キャンパス": "LVCC", "場所": "Mobility Stage, West Hall", "有料パス": "-", "セッション名": "Accelerating Product Development with Virtual Materials and Simulatio", "URL": "https://www.ces.tech/schedule/accelerating-product-development-with-virtual-materials-simulation-presented-by-3m/", "優先度": "高"}, {"No": 19, "date_label": "2025-01-07（火）", "時間": "14:00 - 14:40", "キャンパス": "Venetian", "場所": "Level 4, Marcello 4404", "有料パス": "Digital Health", "セッション名": "Agentic AI in Health Care: Beyond the Hype", "URL": "https://www.ces.tech/schedule/agentic-ai-in-health-care-beyond-the-hype/", "優先度": "低"}, {"No": 20, "date_label": "2025-01-07（火）", "時間": "14:20 - 15:20", "キャンパス": "LVCC", "場所": "Level 2, N258", "有料パス": "-", "セッション名": "The New Renaissance: Al and the Next Era of Innovation", "URL": "https://www.ces.tech/schedule/the-new-renaissance-ai-and-the-next-era-of-innovation/", "優先度": "高"}, {"No": 21, "date_label": "2025-01-07（火）", "時間": "15:00 - 15:30", "キャンパス": "LVCC", "場所": "Fontainebleau, Level 4, Capri 2", "有料パス": "-", "セッション名": "25 Minutes of Al, presented by Monks", "URL": "https://www.ces.tech/schedule/25-minutes-of-ai-presented-by-monks/", "優先度": "高"}, {"No": 22, "date_label": "2025-01-08（水）", "時間": "09:00 - 09:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "Al-Powered Wearables", "URL": "https://www.ces.tech/schedule/ai-powered-wearables/", "優先度": "中"}, {"No": 23, "date_label": "2025-01-08（水）", "時間": "10:00 - 10:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "Fashion Meets Function: The Next Generation of Smart Apparel", "URL": "https://www.ces.tech/schedule/fashion-meets-function-the-next-generation-of-smart-apparel/", "優先度": "低"}, {"No": 24, "date_label": "2025-01-08（水）", "時間": "11:00 - 11:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4304", "有料パス": "-", "セッション名": "Smarter Together: How Standards Power the Al-Driven Smart Home", "URL": "https://www.ces.tech/schedule/smarter-together-how-standards-power-the-ai-driven-smart-home/", "優先度": "低"}, {"No": 25, "date_label": "2025-01-08（水）", "時間": "11:00 - 11:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "Body-Based Tech", "URL": "https://www.ces.tech/schedule/body-based-tech/", "優先度": "低"}, {"No": 26, "date_label": "2025-01-08（水）", "時間": "12:00 - 12:30", "キャンパス": "LVCC", "場所": "Fontainebleau, Level 4, Azure Ballroom, Breakthrough Stage", "有料パス": "-", "セッション名": "Smarter Shopping: Al Agents Powering the Next Era of Retail Innovation, presented by Deloitte", "URL": "https://www.ces.tech/schedule/smarter-shopping-ai-agents-powering-the-next-era-of-retail-innovation-presented-by-deloitte/", "優先度": "低"}];
+    const DATA = [{"No": 1, "date_label": "2025-01-06（月）", "時間": "09:00 - 09:40", "キャンパス": "LVCC", "場所": "West Level 2, W232", "有料パス": "-", "セッション名": "Tech Trends 2026: The Future is Calling, presented by Deloitte", "URL": "https://www.ces.tech/schedule/tech-trends-2026-the-future-is-calling-presented-by-deloitte/", "優先度": "高", "概要": "技術革新から実際の活用事例まで、業界を変革する技術の変化を探ります。今後の展望とロードマップについての洞察を得るためにご視聴ください。"}, {"No": 2, "date_label": "2025-01-06（月）", "時間": "09:00 - 09:40", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 8", "有料パス": "-", "セッション名": "The End of the Funnel", "URL": "https://www.ces.tech/schedule/the-end-of-the-funnel/", "優先度": "中", "概要": "成長は旅ではなく、一瞬のものです。ブランド、テクノロジー、そしてAIがどのようにしてファネルを崩壊させ、ひとつの継続的な顧客体験へと変化させているかを探ります。"}, {"No": 3, "date_label": "2025-01-06（月）", "時間": "09:00 - 09:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4304", "有料パス": "CONNECTIONS Summit: Business of Smart Home", "セッション名": "Beyond the Buzz: Al Impact and Revenues in the Smart Home", "URL": "https://www.ces.tech/schedule/beyond-the-buzz-ai-impact-and-revenues-in-the-smart-home/", "優先度": "低", "概要": "AIがスマートホームのエコシステム全体でどのように応用され、どのようなビジネスモデルや収益化戦略があるのかを、誇大広告に惑わされずに明らかにする。"}, {"No": 4, "date_label": "2025-01-06（月）", "時間": "10:00 - 10:40", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 8", "有料パス": "-", "セッション名": "Agentic Al: Cutting Through the Hype", "URL": "https://www.ces.tech/schedule/agentic-ai-cutting-through-the-hype/", "優先度": "高", "概要": "アシスタントからオーケストレーター、エージェント型コマースに至るまで、このセッションではエージェント型AIを定義し、混乱を解消し、誇大宣伝を具体的な成果に変える方法を示します。"}, {"No": 5, "date_label": "2025-01-06（月）", "時間": "11:00 - 11:40", "キャンパス": "LVCC", "場所": "West Level 2, W218", "有料パス": "-", "セッション名": "The Edge Awakens: Why Agentic Al Will Reshape Everything", "URL": "https://www.ces.tech/schedule/the-edge-awakens-why-agentic-ai-will-reshape-everything/", "優先度": "高", "概要": "視覚とセンサーデータを持つマルチモーダルGenAIは、エージェントAIをエッジで強化しています。インテルと一緒に、より安全な都市、効率的な工場などのためのブレークスルーを探求しましょう。"}, {"No": 6, "date_label": "2025-01-06（月）", "時間": "13:00 - 13:40", "キャンパス": "LVCC", "場所": "North Level 2, N257", "有料パス": "Modev: AI House", "セッション名": "Leading Through Transformation: How Al Is Redefining the Enterprise of the Future", "URL": "https://www.ces.tech/schedule/leading-through-transformation-how-ai-is-redefining-the-enterprise-of-the-future/", "優先度": "高", "概要": "世界中の最大かつ最も複雑な企業が、人工知能をトランスフォーメーション戦略の中心に据えることで、事業運営、競争、価値提供の意味を再構築しています。"}, {"No": 7, "date_label": "2025-01-06（月）", "時間": "13:00 - 13:40", "キャンパス": "LVCC", "場所": "North Level 2, N261", "有料パス": "Smart Communities Track", "セッション名": "Connected Communities: How Al Powers the Next Era of Innovation", "URL": "https://www.ces.tech/schedule/connected-communities-how-ai-powers-the-next-era-of-innovation/", "優先度": "低", "概要": "AIを活用したオペレーショナルインテリジェンスにより、早期の問題発見から高額な修理の回避までが可能になり、コミュニティを円滑かつ効率的に運営できます。"}, {"No": 8, "date_label": "2025-01-06（月）", "時間": "14:00 - 14:40", "キャンパス": "LVCC", "場所": "North Level 2, N257", "有料パス": "Modev: AI House", "セッション名": "Al and the Workforce: Adaptation, Automation, and Abundance", "URL": "https://www.ces.tech/schedule/ai-and-the-workforce-adaptation-automation-and-abundance/", "優先度": "高", "概要": "AIがいかに仕事、スキル、組織を変革しているか、そして自律性の時代に対応できる人材を育成するために何が必要かをご覧ください。"}, {"No": 9, "date_label": "2025-01-06（月）", "時間": "14:00 - 14:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "New Era of Access: Enhancing Assistive Tech with Al", "URL": "https://www.ces.tech/schedule/new-era-of-access-enhancing-assistive-tech-with-ai/", "優先度": "高", "概要": "AIが支援技術をどのように革新し、よりスマートで包括的なソリューションを生み出しているかを探る。"}, {"No": 10, "date_label": "2025-01-06（月）", "時間": "15:00 - 15:30", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 9", "有料パス": "-", "セッション名": "Al at Work: Turning Hype into Hard ROI", "URL": "https://www.ces.tech/schedule/ai-at-work-turning-hype-into-hard-roi/", "優先度": "低", "概要": "理論は忘れましょう。今日の主要なマーケターは、コスト削減、成長促進、競争優位性のためにAIを導入しています。彼らがどのように試験的な導入を超えて、AIを実証し、規模を拡大したかを聞きましょう。"}, {"No": 11, "date_label": "2025-01-06（月）", "時間": "15:30 - 16:00", "キャンパス": "C Space", "場所": "ARIA, Level 1, Joshua 9", "有料パス": "-", "セッション名": "The Algorithm of Awe: Building Fandom in the New Tech Age", "URL": "https://www.ces.tech/schedule/the-algorithm-of-awe-building-fandom-in-the-new-tech-age/", "優先度": "中", "概要": "AI技術の影響力の増大に伴い、ファンダムは進化しています。トランザクション型マーケティングを超え、真の共創と帰属意識を育む方法を学びましょう。"}, {"No": 12, "date_label": "2025-01-07（火）", "時間": "09:00 - 09:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4304", "有料パス": "-", "セッション名": "Unlocking the Power of AI to Transform Mental Health Care", "URL": "https://www.ces.tech/schedule/unlocking-the-power-of-ai-to-transform-mental-health-care/", "優先度": "低", "概要": "人間行動学と科学にAIを融合させ、データに基づいた革新的かつ効果的なスケーラブルなツールを生み出すことで、精神衛生の未来を形作る。"}, {"No": 13, "date_label": "2025-01-07（火）", "時間": "10:00 - 10:40", "キャンパス": "LVCC", "場所": "West Level 2, W218", "有料パス": "Home Entertainment and Streaming", "セッション名": "Personalizing Entertainment with AI", "URL": "https://www.ces.tech/schedule/personalizing-entertainment-with-ai/", "優先度": "中", "概要": "AIがいかにリアルタイムでユーザーの好みに合わせてコンテンツを調整しているか、そしてそれがエンターテイメントをどのように変えつつあるかをご覧ください。"}, {"No": 14, "date_label": "2025-01-07（火）", "時間": "11:00 - 11:40", "キャンパス": "LVCC", "場所": "West Level 2, W218", "有料パス": "-", "セッション名": "The Latest in Smart Devices and Smart Home Integration", "URL": "https://www.ces.tech/schedule/the-latest-in-smart-devices-and-smart-home-integration/", "優先度": "低", "概要": "自宅でデバイスが連携する最新の方法を発見し、シームレスでインテリジェントなコネクテッド・リビングの未来を探ります。"}, {"No": 15, "date_label": "2025-01-07（火）", "時間": "12:30 - 13:00", "キャンパス": "LVCC", "場所": "Fontainebleau, Level 4, Azure Ballroom, Discovery Stage", "有料パス": "-", "セッション名": "The Al Reckoning: Blueprints for Tomorrow's Winners, presented by EY", "URL": "https://www.ces.tech/schedule/the-ai-reckoning-blueprints-for-tomorrow-s-winners-presented-by-ey/", "優先度": "中", "概要": "AIが業界を再定義する4つの未来と、多くのリーダーが間違った未来に備えている理由を解説します。また、バリューブループリントが組織をリードするためにどのように役立つかを学びます。"}, {"No": 16, "date_label": "2025-01-07（火）", "時間": "13:00 - 13:40", "キャンパス": "Venetian", "場所": "Level 3, Lido 3105", "有料パス": "-", "セッション名": "Consumer experience transformation in the age of agentic Al", "URL": "https://app-cta-umbraco-eastus-prod-gnbahsamfmamgfha.eastus-01.azurewebsites.net/schedule/consumer-experience-transformation-in-the-age-of-agentic-ai/", "優先度": "中", "概要": "2030年の消費者の一日：エージェント間エコノミーへようこそ"}, {"No": 17, "date_label": "2025-01-07（火）", "時間": "13:00 - 13:40", "キャンパス": "LVCC", "場所": "Grand Lobby, CTA Stage", "有料パス": "-", "セッション名": "Work Rewired: The Next Tech Revolution", "URL": "https://www.ces.tech/schedule/work-rewired-the-next-tech-revolution/", "優先度": "低", "概要": "自動化、AI、および新しいツールが、働き方、働く場所、そして必要なスキルを変えています。テクノロジーの導入がすべての人に機会をもたらす方法を探ります。"}, {"No": 18, "date_label": "2025-01-07（火）", "時間": "13:30-14:00", "キャンパス": "LVCC", "場所": "Mobility Stage, West Hall", "有料パス": "-", "セッション名": "Accelerating Product Development with Virtual Materials and Simulatio", "URL": "https://www.ces.tech/schedule/accelerating-product-development-with-virtual-materials-simulation-presented-by-3m/", "優先度": "高", "概要": "仮想マテリアルとシミュレーションが、いかにしてより速く、より正確なパフォーマンス予測を実現するかを発見し、実装、トレーサビリティ、ROIのためのプレイブックを持ち帰ることができます。"}, {"No": 19, "date_label": "2025-01-07（火）", "時間": "14:00 - 14:40", "キャンパス": "Venetian", "場所": "Level 4, Marcello 4404", "有料パス": "Digital Health", "セッション名": "Agentic AI in Health Care: Beyond the Hype", "URL": "https://www.ces.tech/schedule/agentic-ai-in-health-care-beyond-the-hype/", "優先度": "低", "概要": "AIエージェントが臨床上の意思決定、業務管理を行い、さまざまな現場で臨床医と連携する未来について、専門家が議論します。"}, {"No": 20, "date_label": "2025-01-07（火）", "時間": "14:20 - 15:20", "キャンパス": "LVCC", "場所": "Level 2, N258", "有料パス": "-", "セッション名": "The New Renaissance: Al and the Next Era of Innovation", "URL": "https://www.ces.tech/schedule/the-new-renaissance-ai-and-the-next-era-of-innovation/", "優先度": "高", "概要": "ガバナンスから国際競争まで、今日の選択が新たなイノベーションのルネサンスの方向性を定めるでしょう。"}, {"No": 21, "date_label": "2025-01-07（火）", "時間": "15:00 - 15:30", "キャンパス": "LVCC", "場所": "Fontainebleau, Level 4, Capri 2", "有料パス": "-", "セッション名": "25 Minutes of Al, presented by Monks", "URL": "https://www.ces.tech/schedule/25-minutes-of-ai-presented-by-monks/", "優先度": "高", "概要": "Monksの専門家が最新のAIニュースを取り上げ、実際の事例を紹介します。参加者は、すぐに試せる実践的なアイデアと、AIについていくために不可欠な知識を得ることができます。"}, {"No": 22, "date_label": "2025-01-08（水）", "時間": "09:00 - 09:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "Al-Powered Wearables", "URL": "https://www.ces.tech/schedule/ai-powered-wearables/", "優先度": "中", "概要": "ウェアラブルデバイスは何年も前から存在していますが、AIがそれらに「スーパーパワー」を与え、受動的なモニターから、実用的な洞察を提供する能動的でパーソナライズされたデバイスへと変貌させています。"}, {"No": 23, "date_label": "2025-01-08（水）", "時間": "10:00 - 10:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "Fashion Meets Function: The Next Generation of Smart Apparel", "URL": "https://www.ces.tech/schedule/fashion-meets-function-the-next-generation-of-smart-apparel/", "優先度": "低", "概要": "スマートアパレルがファッションと高度な機能をシームレスに融合させ、健康追跡から順応性のある快適性まで、あらゆるものを提供する方法をご紹介します。"}, {"No": 24, "date_label": "2025-01-08（水）", "時間": "11:00 - 11:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4304", "有料パス": "-", "セッション名": "Smarter Together: How Standards Power the Al-Driven Smart Home", "URL": "https://www.ces.tech/schedule/smarter-together-how-standards-power-the-ai-driven-smart-home/", "優先度": "低", "概要": "Matterがどのように相互互換性を推進し、より質の高いデータでAIを強化することで、よりスマートでパーソナライズされた予測的なスマートホーム体験を実現するかを探る。"}, {"No": 25, "date_label": "2025-01-08（水）", "時間": "11:00 - 11:40", "キャンパス": "Venetian", "場所": "Level 4, Lando 4302", "有料パス": "-", "セッション名": "Body-Based Tech", "URL": "https://www.ces.tech/schedule/body-based-tech/", "優先度": "低", "概要": "指輪、メガネ、イヤホンなど、これらのデバイスは私たちの体を変えつつあります。まだサイボーグではありませんが、データが私たちの体に関する意思決定を導く世界に近づいています。"}, {"No": 26, "date_label": "2025-01-08（水）", "時間": "12:00 - 12:30", "キャンパス": "LVCC", "場所": "Fontainebleau, Level 4, Azure Ballroom, Breakthrough Stage", "有料パス": "-", "セッション名": "Smarter Shopping: Al Agents Powering the Next Era of Retail Innovation, presented by Deloitte", "URL": "https://www.ces.tech/schedule/smarter-shopping-ai-agents-powering-the-next-era-of-retail-innovation-presented-by-deloitte/", "優先度": "低", "概要": "AIエージェントが、パーソナライゼーション、サプライチェーンの最適化、店舗体験の向上を通じて、価値主導型リテールをどのように変革するかをご紹介します。"}];
 
     const byId = (id) => document.getElementById(id);
 
-    const state = {
-      campus: "",
-      prio: ""
-    };
+    const state = { campus: "", prio: "" };
 
-    function uniq(arr) {
-      return Array.from(new Set(arr)).filter(Boolean);
-    }
+    function uniq(arr) { return Array.from(new Set(arr)).filter(Boolean); }
 
     function badgeClass(p) {
       if (p === "高") return "high";
@@ -331,12 +271,23 @@
       return Array.from(map.entries());
     }
 
+    function escapeHtml(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+    function escapeAttr(s) { return String(s ?? "").replaceAll('"', "%22").replaceAll(" ", "%20"); }
+
     function card(it) {
       const p = (it["優先度"] || "").trim();
       const badge = p ? `<span class="badge ${badgeClass(p)}">優先度：${escapeHtml(p)}</span>` : `<span class="badge">優先度：-</span>`;
       const paid = (it["有料パス"] || "").trim();
       const paidPill = paid && paid !== "-" ? `<span class="pill">有料パス：${escapeHtml(paid)}</span>` : `<span class="pill">有料パス：なし</span>`;
       const url = (it["URL"] || "").trim();
+      const overview = (it["概要"] || "").trim();
 
       return `
         <article class="card">
@@ -352,6 +303,8 @@
             }
           </div>
 
+          ${overview ? `<p class="overview">${escapeHtml(overview)}</p>` : ""}
+
           <div class="actions">
             ${paidPill}
           </div>
@@ -365,28 +318,15 @@
       `;
     }
 
-    function escapeHtml(s) {
-      return String(s ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-    function escapeAttr(s) {
-      return String(s ?? "").replaceAll('"', "%22").replaceAll(" ", "%20");
-    }
-
     function render() {
       const filtered = DATA.filter(matches);
-
       byId("meta").textContent = `全${DATA.length}件 / 表示${filtered.length}件`;
 
       const grouped = groupByDate(filtered);
       const app = byId("app");
 
       if (filtered.length === 0) {
-        app.innerHTML = `<div class="day"><div class="empty">条件に一致する予定がありません（検索語や絞り込みを変えてください）</div></div>`;
+        app.innerHTML = `<div class="day"><div class="empty">条件に一致する予定がありません（絞り込みを変えてください）</div></div>`;
         return;
       }
 
@@ -406,6 +346,15 @@
       footer.className = "footer";
       footer.textContent = "※ このHTMLはローカルで開けます（Excelの内容を埋め込み済み）";
       app.appendChild(footer);
+    }
+
+    function setControlsCollapsed(collapsed) {
+      const wrap = byId("controlsWrap");
+      const btn = byId("toggleControls");
+      if (!wrap || !btn) return;
+      wrap.classList.toggle("collapsed", collapsed);
+      btn.setAttribute("aria-expanded", String(!collapsed));
+      wrap.setAttribute("aria-hidden", String(collapsed));
     }
 
     function initControls() {
@@ -428,37 +377,19 @@
       });
     }
 
-
-    function setControlsCollapsed(collapsed) {
-      const wrap = byId("controlsWrap");
-      const btn = byId("toggleControls");
-      if (!wrap || !btn) return;
-      wrap.classList.toggle("collapsed", collapsed);
-      btn.setAttribute("aria-expanded", String(!collapsed));
-      wrap.setAttribute("aria-hidden", String(collapsed));
-      btn.textContent = collapsed ? "絞り込み" : "絞り込み";
-      try { localStorage.setItem("ces_controls_collapsed", collapsed ? "1" : "0"); } catch (e) {}
-    }
-
     function initToggle() {
-      // Always start collapsed on load
-      setControlsCollapsed(true);
-
       const btn = byId("toggleControls");
       const wrap = byId("controlsWrap");
       if (!btn || !wrap) return;
 
-      // restore
-      let collapsed = true; // force hidden on initial load
-      try { collapsed = localStorage.getItem("ces_controls_collapsed") === "1"; } catch (e) {}
-      setControlsCollapsed(collapsed);
+      // Always start collapsed on load
+      setControlsCollapsed(true);
 
       btn.addEventListener("click", () => {
         const isCollapsed = wrap.classList.contains("collapsed");
         setControlsCollapsed(!isCollapsed);
       });
     }
-
 
     initControls();
     initToggle();
