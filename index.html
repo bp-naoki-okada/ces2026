@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
@@ -243,6 +244,27 @@
       .title-row { align-items: stretch; }
     }
 
+
+    .title-link {
+      color: var(--text);
+      text-decoration: none;
+    }
+    .title-link:hover {
+      text-decoration: underline;
+      opacity: 0.9;
+    }
+
+
+    .pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      line-height: 1.2;
+      margin-top: -2px;
+    }
+    .actions {
+      margin-top: 6px;
+    }
+
   </style>
 </head>
 <body>
@@ -251,10 +273,10 @@
       <div class="title-row">
         <h1>CES 2026 AI系セッション</h1>
         <div class="meta" id="meta"></div>
-        <button id="toggleControls" class="toggle" type="button" aria-expanded="true">検索・絞り込みを折り畳む</button>
+        <button id="toggleControls" class="toggle" type="button" aria-expanded="false">絞り込み</button>
       </div>
 
-      <div id="controlsWrap" class="controls-wrap" aria-hidden="false">
+      <div id="controlsWrap" class="controls-wrap collapsed" aria-hidden="true">
         <div class="controls">
                 <select id="campus" class="select">
           <option value="">キャンパス：すべて</option>
@@ -323,11 +345,15 @@
             ${badge}
           </div>
 
-          <div class="h2">${escapeHtml(it["セッション名"] || "")}</div>
+          <div class="h2">
+            ${url
+              ? `<a class="title-link" href="${escapeAttr(url)}" target="_blank" rel="noopener">${escapeHtml(it["セッション名"] || "")}</a>`
+              : `${escapeHtml(it["セッション名"] || "")}`
+            }
+          </div>
 
           <div class="actions">
             ${paidPill}
-            ${url ? `<a class="btn" href="${escapeAttr(url)}" target="_blank" rel="noopener">公式ページを開く ↗</a>` : ""}
           </div>
 
           <div class="row">
@@ -410,17 +436,20 @@
       wrap.classList.toggle("collapsed", collapsed);
       btn.setAttribute("aria-expanded", String(!collapsed));
       wrap.setAttribute("aria-hidden", String(collapsed));
-      btn.textContent = collapsed ? "検索・絞り込みを表示" : "検索・絞り込みを折り畳む";
+      btn.textContent = collapsed ? "絞り込み" : "絞り込み";
       try { localStorage.setItem("ces_controls_collapsed", collapsed ? "1" : "0"); } catch (e) {}
     }
 
     function initToggle() {
+      // Always start collapsed on load
+      setControlsCollapsed(true);
+
       const btn = byId("toggleControls");
       const wrap = byId("controlsWrap");
       if (!btn || !wrap) return;
 
       // restore
-      let collapsed = false;
+      let collapsed = true; // force hidden on initial load
       try { collapsed = localStorage.getItem("ces_controls_collapsed") === "1"; } catch (e) {}
       setControlsCollapsed(collapsed);
 
